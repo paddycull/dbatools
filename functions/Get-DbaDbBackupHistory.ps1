@@ -73,7 +73,10 @@ function Get-DbaDbBackupHistory {
         Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
     .PARAMETER AgCheck
-        Internal parameter used for getting history from AvailabilityGroups. If set, this will disable  Availability Group support
+        This parameter is used to enable basic Availability Group support
+        Currently (24/05/2020) for this to work, the AG needs to support the following:
+            - There is an Availability Group Listener configured
+            - All nodes must be listening on the default port
 
     .NOTES
         Tags: DisasterRecovery, Backup
@@ -228,7 +231,7 @@ function Get-DbaDbBackupHistory {
             }
             $AgResults = @()
             $ProcessedAgDatabases = @()
-            if (($server.AvailabilityGroups.count -gt 0) -and ($agCheck -ne $True)) {
+            if (($server.AvailabilityGroups.count -gt 0) -and ($agCheck -eq $True)) {
                 $agShortInstance = $instance.FullName.split('.')[0]
                 if ($agShortInstance -in ($server.AvailabilityGroups.AvailabilityGroupListeners).Name) {
                     # We have a listener passed in, just query the dbs specified or all in the AG
@@ -237,7 +240,7 @@ function Get-DbaDbBackupHistory {
                     $null = $PsBoundParameters.Remove('AgCheck')
                     Write-Message -Level Verbose -Message "Fetching history from replicas on $($AvailabilityGroupBase.AvailabilityReplicas.name)"
                     $AvailabilityGroupBase = ($server.AvailabilityGroups | Where-Object { $_.AvailabilityGroupListeners.name -eq $agShortInstance })
-                    $AgLoopResults = Get-DbaDbBackupHistory -SqlInstance $AvailabilityGroupBase.AvailabilityReplicas.name @PSBoundParameters -AgCheck -IncludeCopyOnly
+                    $AgLoopResults = Get-DbaDbBackupHistory -SqlInstance $AvailabilityGroupBase.AvailabilityReplicas.name @PSBoundParameters -IncludeCopyOnly
                     $AvailabilityGroupName = $AvailabilityGroupBase.name
                     Foreach ($agr in $AgLoopResults) {
                         $agr.AvailabilityGroupName = $AvailabilityGroupName
