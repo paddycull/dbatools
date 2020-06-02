@@ -30,7 +30,7 @@ function Get-DecryptedObject {
         return
     }
 
-    $sourceNetBios = Resolve-NetBiosName $server
+    $sourceNetBios = (Resolve-DbaNetworkName -ComputerName $server.ComputerName).FQDN
     $instance = $server.InstanceName
     $serviceInstanceId = $server.ServiceInstanceId
 

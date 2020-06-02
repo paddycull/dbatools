@@ -200,7 +200,7 @@ function Copy-DbaCredential {
             Write-Message -Level Verbose -Message "You are using SQL credentials and this script requires Windows admin access to the $Source server. Trying anyway."
         }
 
-        $sourceNetBios = Resolve-NetBiosName $sourceServer
+        $sourceNetBios = (Resolve-DbaNetworkName -ComputerName $sourceServer.ComputerName).FQDN
 
         Invoke-SmoCheck -SqlInstance $sourceServer
 

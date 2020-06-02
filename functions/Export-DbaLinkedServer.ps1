@@ -108,7 +108,7 @@ function Export-DbaLinkedServer {
             }
 
             Write-Message -Level Verbose -Message "Getting NetBios name for $instance."
-            $sourceNetBios = Resolve-NetBiosName $server
+            $sourceNetBios = (Resolve-DbaNetworkName -ComputerName $server.ComputerName).FQDN
 
             Write-Message -Level Verbose -Message "Checking if Remote Registry is enabled on $instance."
             try {

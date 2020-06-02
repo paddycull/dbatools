@@ -259,7 +259,7 @@ function Copy-DbaLinkedServer {
             return
         }
         Write-Message -Level Verbose -Message "Getting NetBios name for $source."
-        $sourceNetBios = Resolve-NetBiosName $sourceserver
+        $sourceNetBios = (Resolve-DbaNetworkName -ComputerName $sourceserver.ComputerName).FQDN
 
         Write-Message -Level Verbose -Message "Checking if Remote Registry is enabled on $source."
         try {
